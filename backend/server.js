@@ -1,16 +1,20 @@
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import express from "express";
 
+import { connectToDB } from "./db/connectToDB.js";
 import authRoute from "./routes/auth.route.js";
+
+const PORT = process.env.PORT || 5000;
 
 dotenv.config();
 const app = express();
 
-const PORT = process.env.PORT || 5000;
-
 app.use(express.json());
+app.use(cookieParser());
+
+connectToDB();
+
 app.use("/api/auth", authRoute);
 
-app.listen(PORT, () => {
-  console.log(`connected to ${PORT}`);
-});
+app.listen(PORT);

@@ -52,4 +52,26 @@ const signup = async (req, res) => {
   }
 };
 
-export { signup };
+const signin = async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: "Please type correct credentials." });
+  }
+
+  const user = await User.findOne({ username });
+
+  if (!user) {
+    return res.status(400).json({ error: "User not found." });
+  }
+
+  const matchedPass = await bcrypt.compare(password, user.password);
+
+  if (!matchedPass) {
+    return res.status(400).json({ error: "Pass not matched." });
+  }
+
+  return res.status(200).json({ user });
+};
+
+export { signup, signin };

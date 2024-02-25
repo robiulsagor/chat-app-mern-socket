@@ -53,25 +53,41 @@ const signup = async (req, res) => {
 };
 
 const signin = async (req, res) => {
-  const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ error: "Please type correct credentials." });
+    if (!username || !password) {
+      return res
+        .status(400)
+        .json({ error: "Please type correct credentials." });
+    }
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(400).json({ error: "User not found." });
+    }
+
+    const matchedPass = await bcrypt.compare(password, user.password);
+
+    if (!matchedPass) {
+      return res.status(400).json({ error: "Pass not matched." });
+    }
+
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.log("Error in signup controller", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-
-  const user = await User.findOne({ username });
-
-  if (!user) {
-    return res.status(400).json({ error: "User not found." });
-  }
-
-  const matchedPass = await bcrypt.compare(password, user.password);
-
-  if (!matchedPass) {
-    return res.status(400).json({ error: "Pass not matched." });
-  }
-
-  return res.status(200).json({ user });
 };
 
-export { signup, signin };
+const signout = (req, res) => {
+  try {
+    res.cookie("token", "").json({ message: "Logged out successfully!" });
+  } catch (error) {
+    console.log("Error in signup controller", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export { signup, signin, signout };

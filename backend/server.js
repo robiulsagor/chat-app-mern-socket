@@ -4,6 +4,7 @@ import express from "express";
 
 import { connectToDB } from "./db/connectToDB.js";
 import authRoute from "./routes/auth.route.js";
+import messageRoute from "./routes/message.route.js";
 
 const PORT = 5000;
 
@@ -16,5 +17,6 @@ app.use(cookieParser());
 connectToDB();
 
 app.use("/api/auth", authRoute);
+app.use("/api/messages", messageRoute);
 
 app.listen(PORT);
